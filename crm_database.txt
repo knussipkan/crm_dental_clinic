@@ -1,0 +1,128 @@
+-- Database: dentalclinic
+
+-- DROP DATABASE IF EXISTS dentalclinic;
+
+CREATE DATABASE dentalclinic
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'Russian_Kazakhstan.1251'
+    LC_CTYPE = 'Russian_Kazakhstan.1251'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+	
+	
+	create table Doctor(
+	doctor_id BIGINT PRIMARY KEY,
+	full_name VARCHAR(50) NOT NULL,
+	email VARCHAR(30) NOT NULL,
+	address VARCHAR(30) NOT NULL,
+	phone_n CHAR(12) NOT NULL
+	);
+	
+	CREATE TABLE Sources(
+	source_id BIGINT PRIMARY KEY,
+	title VARCHAR(50) NOT NULL
+	);
+	
+	CREATE TABLE Diagnoses(
+	diagnose_id BIGINT PRIMARY KEY,
+	title VARCHAR(30) NOT NULL,
+	description VARCHAR(50)
+	);
+	
+	CREATE TABLE Status(
+	id_status BIGINT PRIMARY KEY,
+	title VARCHAR(20) NOT NULL
+	);
+	
+	CREATE TABLE Status_record(
+	status_record BIGINT PRIMARY KEY,
+	title VARCHAR(30) NOT NULL
+	);
+	
+	CREATE TABLE Services(
+	service_id BIGINT PRIMARY KEY,
+	code VARCHAR(20) NOT NULL,
+	title VARCHAR(30) NOT NULL,
+	price FLOAT NOT NULL,
+	date_added DATE NOT NULL,
+	date_modified DATE NOT NULL
+	);
+	
+	CREATE TABLE Discounts(
+	discount_id BIGINT PRIMARY KEY,
+	title VARCHAR(30) NOT NULL,
+	size FLOAT NOT NULL,
+	date_added DATE NOT NULL,
+	date_modified DATE NOT NULL,
+	type INT NOT NULL
+	);
+	
+	CREATE TABLE Userr(
+	user_id BIGINT PRIMARY KEY,
+	login VARCHAR(20) NOT NULL,
+	password VARCHAR(20) NOT NULL,
+	name VARCHAR(30)
+	);
+	
+	
+	
+	CREATE TABLE Patient(
+	patient_id BIGINT PRIMARY KEY,
+	full_name VARCHAR(30) NOT NULL,
+	coment VARCHAR(30),
+	address VARCHAR(30) NOT NULL,
+	phone_n CHAR(12) NOT NULL,
+	gender CHAR NOT NULL,
+	email VARCHAR(20),
+	date_of_birth DATE NOT NULL,
+	date_added DATE NOT NULL,
+	date_modified DATE NOT NULL,
+	source_id INT REFERENCES Sources(source_id)
+	);
+	
+	CREATE TABLE Patients_History(
+	patient_history_id BIGINT PRIMARY KEY
+	);
+	
+	CREATE TABLE Diagnoses_History(
+	diagnoses_history_id BIGINT PRIMARY KEY,
+	diagnose_id INT REFERENCES Diagnoses(diagnose_id),
+	patient_history_id INT REFERENCES Patients_History(patient_history_id)
+	);
+	
+	
+	CREATE TABLE Discount_History(
+	discount_history_id BIGINT PRIMARY KEY,
+	patient_history_id INT REFERENCES Patients_History(patient_history_id),
+	discount_id INT REFERENCES Discounts(discount_id),
+	title VARCHAR(30) NOT NULL,
+	typee VARCHAR(20),
+	total VARCHAR(30) NOT NULL
+	);
+	
+	CREATE TABLE Tooth_History(
+	tooth_history_id BIGINT PRIMARY KEY,
+	patient_id INT REFERENCES Patient(patient_id) NOT NULL,
+	tooth_number INT,
+	status_id INT REFERENCES Status(id_status) NOT NULL
+	);
+	
+	CREATE TABLE Patient_Balance(
+	patient_balance_id BIGINT PRIMARY KEY,
+	patient_id INT REFERENCES Patient(patient_id),
+	patient_history_id INT REFERENCES Patients_History(patient_history_id),
+	operation INT,
+	date DATE,
+	sum FLOAT,
+	coment VARCHAR(20)
+	);
+	
+	CREATE TABLE Patient_Files(
+	patient_files_id BIGINT PRIMARY KEY,
+	patient_id INT REFERENCES Patient(patient_id) NOT NULL,
+	file_name VARCHAR(20) NOT NULL,
+	created_time TIME NOT NULL,
+	updated_time TIME NOT NULL
+	);
