@@ -1,0 +1,139 @@
+-- Database: crm
+
+-- DROP DATABASE IF EXISTS crm;
+
+CREATE DATABASE crm
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'Russian_Kazakhstan.1251'
+    LC_CTYPE = 'Russian_Kazakhstan.1251'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+	
+	
+	CREATE TABLE UserRole(
+	user_role_id BIGINT PRIMARY KEY,
+	user_role_name VARCHAR(10) NOT NULL
+	);
+	
+	CREATE TABLE Admin_Login(
+	admin_id BIGINT PRIMARY KEY,
+	login VARCHAR(20) NOT NULL,
+	passworrd VARCHAR(20) NOT NULL,
+	user_role INT REFERENCES UserRole(user_role_id)
+	);
+	
+	CREATE TABLE Doctor(
+	doctor_id BIGINT PRIMARY KEY,
+	full_name VARCHAR(40) NOT NULL,
+	email VARCHAR(20) NOT NULL,
+	address VARCHAR(30) NOT NULL,
+	phone_n CHAR(12) NOT NULL,
+	specialist VARCHAR(20) NOT NULL
+	);
+	
+	CREATE TABLE Diagnoses(
+	diagnose_id BIGINT PRIMARY KEY,
+	title VARCHAR(30) NOT NULL,
+	description VARCHAR(50)
+	);
+	
+	CREATE TABLE Sources(
+	source_id BIGINT PRIMARY KEY,
+	title VARCHAR(30) NOT NULL
+	);
+	
+	CREATE TABLE Status(
+	status_id BIGINT PRIMARY KEY,
+	title VARCHAR(20) NOT NULL
+	);
+	
+	CREATE TABLE Services(
+	service_id BIGINT PRIMARY KEY,
+	price FLOAT NOT NULL,
+	title VARCHAR(20) NOT NULL
+	);
+	
+	CREATE TABLE Status_Record(
+	status_record_id BIGINT PRIMARY KEY,
+	title VARCHAR(20) NOT NULL
+	);
+	
+	CREATE TABLE Payment(
+	payment_id BIGINT PRIMARY KEY,
+	date_payment DATE,
+	summ FLOAT NOT NULL,
+	commentss VARCHAR(20)
+	);
+	
+	CREATE TABLE Patient(
+	patient_id BIGINT PRIMARY KEY,
+	full_name VARCHAR(40) NOT NULL,
+	commentss VARCHAR(30) NOT NULL,
+	address VARCHAR(30) NOT NULL,
+	phone_n CHAR(12) NOT NULL,
+	gender CHAR NOT NULL,
+	email VARCHAR(20),
+	date_of_birth DATE NOT NULL,
+	date_added DATE,
+	date_modified DATE,
+	allergy VARCHAR(30),
+	illness VARCHAR(30),
+	source_id INT REFERENCES Sources(source_id)
+	);
+	
+	CREATE TABLE Patients_Files(
+	patint_files_id BIGINT PRIMARY KEY,
+	patient_id INT REFERENCES Patient(patient_id),
+	file_name VARCHAR(50),
+	created_date DATE,
+	updated_date DATE
+	);
+	
+	
+	CREATE TABLE Tooth_History(
+	tooth_history_id BIGINT PRIMARY KEY,
+	patient_id INT REFERENCES Patient(patient_id) NOT NULL,
+	tooth_number INT,
+	status_id INT REFERENCES Status(status_id) NOT NULL,
+	service_id INT REFERENCES Services(service_id)
+	);
+	
+	
+	
+		
+	CREATE TABLE Diagnoses_History(
+	diagnoses_history_id BIGINT PRIMARY KEY,
+	diagnoses_id INT REFERENCES Diagnoses(diagnose_id),
+	patient_id INT REFERENCES Patient(patient_id)
+	);
+	
+	CREATE TABLE Order_Services(
+	order_service_id BIGINT PRIMARY KEY,
+	patient_id INT REFERENCES Patient(patient_id),
+	service_id INT REFERENCES Services(service_id),
+	title VARCHAR(30),
+	price FLOAT,
+	quantity FLOAT,
+	total FLOAT
+	);
+	
+	CREATE TABLE Patient_History(
+	patient_history_id BIGINT PRIMARY KEY,
+	patient_id INT REFERENCES Patient(patient_id),
+	doctor_id INT REFERENCES Doctor(doctor_id),
+	visit_date DATE,
+	visit_time TIME,
+	status_record_id INT REFERENCES Status_Record(status_record_id),
+	diagnose_id INT REFERENCES Diagnoses(diagnose_id),
+	order_service_id INT REFERENCES Order_Services(order_service_id),
+	diagnose_history_id INT REFERENCES Diagnoses_History(diagnoses_history_id)
+	);
+	
+	CREATE TABLE Visit_Counter(
+	patient_history_id INT REFERENCES Patient_History(patient_history_id) NOT NULL,
+	visit_count INT NOT NULL
+	);
+	
+	
