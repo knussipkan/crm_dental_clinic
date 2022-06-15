@@ -1,0 +1,135 @@
+-- Database: crm_dentalclinic
+
+-- DROP DATABASE IF EXISTS crm_dentalclinic;
+
+CREATE DATABASE crm_dentalclinic
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'Russian_Kazakhstan.1251'
+    LC_CTYPE = 'Russian_Kazakhstan.1251'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+	
+	create table UserRole(
+	user_role_id bigint primary key,
+	user_role_name varchar(20) not null
+	);
+	
+	create table Userr(
+	user_id bigint primary key,
+	login varchar(20) not null,
+	password varchar(10) not null,
+	user_role_id int references UserRole(user_role_id)
+	);
+	
+	create table Doctor(
+	doctor_id bigint primary key,
+	full_name varchar(30) not null,
+	email varchar(20) not null,
+	address varchar(30) not null,
+	phone_n char(12) not null,
+	specialist varchar(20) not null
+	);
+	
+	create table Diagnoses(
+	diagnose_id bigint primary key,
+	title varchar(30) not null,
+	description varchar(30)
+	);
+	
+	create table Status(
+	status_id bigint primary key,
+	title varchar(20) not null
+	);
+	
+	create table Services(
+	service_id bigint primary key,
+	price float not null,
+	title varchar(20) not null
+	);
+	
+	create table Sources(
+	source_id bigint primary key,
+	title varchar(20) not null
+	);
+	
+	create table Patient(
+	patient_id bigint primary key,
+	full_name varchar(30) not null,
+	coment varchar(20),
+	address varchar(30) not null,
+	phone_n char(12) not null,
+	gender char not null,
+	email varchar(10),
+	date_of_birth date not null,
+	date_added date,
+	date_modified date,
+	source_id int references Sources(source_id),
+	allergy varchar(30),
+	illness varchar(20)
+	);
+	
+	
+	create table Patients_Files(
+	patient_files_id bigint primary key,
+	patient_id int references Patient(patient_id),
+	file_name varchar(30),
+	created_time time,
+	updated_time time
+	);
+	
+	create table Tooth_History(
+	tooth_history_id bigint primary key,
+	patient_id int references Patient(patient_id),
+	tooth_number int,
+	status_id int references Status(status_id),
+	service_id int references Services(service_id)
+	);
+	
+	create table Diagnoses_History(
+	diagnoses_history_id bigint primary key,
+	diagnose_id int references Diagnoses(diagnose_id),
+	patient_id int references Patient(patient_id)
+	);
+	
+	
+	create table Payment(
+	payment_id bigint primary key,
+	date_payment date not null,
+	summ float not null,
+	coment varchar(20),
+	patient_id int references Patient(patient_id)
+	);
+	
+	create table Status_record(
+	status_record_id bigint primary key,
+	title varchar(20) not null
+	);
+	
+	
+	create table Patients_History(
+	patient_history_id bigint primary key,
+	patient_id int references Patient(patient_id),
+	doctor_id int references Doctor(doctor_id),
+	visit_date date not null,
+	visit_time time not null,
+	status_record_id int references Status_Record(status_record_id),
+	diagnose_id int references Diagnoses(diagnose_id),
+	diagnose_history_id int references Diagnoses_History(diagnoses_history_id)
+	);
+	
+	create table Order_Services(
+	order_service_id bigint primary key,
+	patient_history_id int references Patients_History(patient_history_id),
+	service_id int references Services(service_id),
+	title varchar(20),
+	price float not null,
+	quantity int not null,
+	total float not null,
+	diagnose_history_id int references Diagnoses_History(diagnoses_history_id),
+	status_record_id int references Status_Record(status_record_id)
+	);
+	
+
+	
